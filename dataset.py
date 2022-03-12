@@ -62,9 +62,15 @@ class Dataset(torch.utils.data.Dataset):
             # Truncate
             while True:
                 tokenized = self.tokenizer.batch_encode_plus([text], padding=False, return_tensors=return_tensors) # TODO : special token
-                if len(tokenized)> self.max_length:
+                if len(tokenized.input_ids[0])> self.max_length:
                     idx = [m.start() for m in re.finditer("\[user\]", text)]
-                    text = text[:idx[0]] + text[idx[1]:] # delete one turn
+                    try:
+                        text = text[:idx[0]] + text[idx[1]:] # delete one turn
+                    except IndexError as e:
+                        useable = self.max_length- (idx[0] + len("[user]"))
+                        second_part = text[idx[0] + len("[user]"):]
+                        short_second_part = second_part[len(second_part) - useable +1:]
+                        text = text[:idx[0]] + "[user] " + short_second_part 
                 else:
                     break
                 
@@ -90,7 +96,7 @@ class Dataset(torch.utils.data.Dataset):
             turn_ids = dialogue.keys()
             for t_id in turn_ids:
                 turn = dialogue[t_id]
-                dialogue_text += '[사용자] '
+                dialogue_text += '[user] '
                 dialogue_text += str(turn['user'])
 
                 for key_idx, key in enumerate(ontology.QA['all-domain']): # TODO
@@ -132,7 +138,7 @@ class Dataset(torch.utils.data.Dataset):
                 gold_context[d_id][int(t_id)] = dialogue_text
                 
                 
-                dialogue_text += '[시스템] '
+                dialogue_text += '[system] '
                 dialogue_text += turn['system']
                 
 
@@ -219,10 +225,11 @@ if __name__ == '__main__':
     t = args.tokenizer
     for batch in loader:
         for i in range(16):
-            print(t.decode(batch['input']['input_ids'][i]))
-            print(t.decode(batch['target']['input_ids'][i]))
-            print()
+            # print(t.decode(batch['input']['input_ids'][i]))
+            # print(t.decode(batch['target']['input_ids'][i]))
+            # print()
             
-        pdb.set_trace()
+        # pdb.set_trace()
+            pass
     
     

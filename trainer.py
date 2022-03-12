@@ -20,7 +20,7 @@ def train(args, gpu, model, train_loader, optimizer, train_dataset):
         labels = batch['target']['input_ids'].to(f'cuda:{gpu}')
         
         outputs = model(input_ids=input_ids, labels=labels)
-        outputs_text = model.module.generate(input_ids=input_ids)
+        outputs_text = model.module.generate(input_ids=input_ids).detach()
         outputs_text = [args.tokenizer.decode(o).replace('</s>','').replace('<pad>','').strip() for o in outputs_text]
         
         for idx in range(len(outputs_text)):
