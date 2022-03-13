@@ -92,7 +92,7 @@ class Dataset(torch.utils.data.Dataset):
         turn_id = []
         
         for d_id in dataset.keys():
-            if d_id not in self.use_list: continue
+            if self.data_type == 'train' and d_id not in self.use_list: continue
             dialogue = dataset[d_id]
             dialogue_text = ""
             turn_ids = dialogue.keys()

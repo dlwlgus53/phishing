@@ -5,7 +5,7 @@ from flask import Flask, render_template, request, url_for
 
 #Initialize
 app = Flask(__name__)
-model = Model('./model/wozphishing1.0.pt')
+model = Model('./model/wozphishing_th1.0.pt')
 #Define a route for url
 
 @app.route('/')

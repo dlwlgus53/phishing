@@ -82,6 +82,7 @@ class Model:
                     iter+1, 
                     str(len(test_loader)),
                     ))
+        print(belief_state)
         turns = max(list(belief_state['temp'].keys()))
         return  dict(belief_state['temp'][turns])
     
