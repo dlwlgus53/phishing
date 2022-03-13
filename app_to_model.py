@@ -62,7 +62,6 @@ class Model:
         model.eval()
         with torch.no_grad():
             for iter,batch in enumerate(test_loader):
-                pdb.set_trace()
                 outputs_text = model.generate(input_ids=batch['input']['input_ids'].to('cuda'))
                 outputs_text = [args.tokenizer.decode(o).replace('</s>','').replace('<pad>','').strip() for o in outputs_text]
                 
@@ -83,8 +82,8 @@ class Model:
                     iter+1, 
                     str(len(test_loader)),
                     ))
-        print(belief_state)
-        return  dict(belief_state)
+        turns = max(list(belief_state['temp'].keys()))
+        return  dict(belief_state['temp'][turns])
     
     
     
@@ -97,8 +96,8 @@ class Model:
                 temp[int(idx/2)]['user'] = turn
             else:
                 temp[int(idx/2)]['system'] = turn
-                temp[int(idx/2)]["belief"] = {}
-        
+            temp[int(idx/2)]["belief"] = {}
+            
         dial = {'temp' : temp}
         
         with open(args.test_path,'w') as f:

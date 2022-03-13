@@ -11,6 +11,8 @@ from collections import defaultdict
 import random
 logger = logging.getLogger("my")
 
+
+
 class Dataset(torch.utils.data.Dataset):
     def __init__(self, args, data_path, data_type):
         random.seed(args.seed)
@@ -28,9 +30,8 @@ class Dataset(torch.utils.data.Dataset):
         self.gold_context= defaultdict(lambda : defaultdict(str))# dial_id, # turn_id
         
         self.data_type = data_type
-        
-        
-
+        f = open("./use_list.txt", 'r')
+        self.use_list = [line.strip() for line in f.readlines()]
         raw_path = f'{data_path}'
         
         if args.do_short:
@@ -91,6 +92,7 @@ class Dataset(torch.utils.data.Dataset):
         turn_id = []
         
         for d_id in dataset.keys():
+            if d_id not in self.use_list: continue
             dialogue = dataset[d_id]
             dialogue_text = ""
             turn_ids = dialogue.keys()
@@ -101,7 +103,6 @@ class Dataset(torch.utils.data.Dataset):
 
                 for key_idx, key in enumerate(ontology.QA['all-domain']): # TODO
                     q = ontology.QA[key]['description']
-
                     if key in turn['belief']: # 언급을 한 경우
                         a = turn['belief'][key]
                         if isinstance(a, list) : a= a[0] # in muptiple type, a == ['sunday',6]
@@ -216,7 +217,7 @@ if __name__ == '__main__':
     
     args = parser.parse_args()
 
-    args.data_path = '../KLUE/dev_data_short.json'
+    args.data_path = './data/0306data.json' 
     from transformers import T5Tokenizer
     args.tokenizer = T5Tokenizer.from_pretrained('google/mt5-small')
     
@@ -225,11 +226,10 @@ if __name__ == '__main__':
     t = args.tokenizer
     for batch in loader:
         for i in range(16):
-            # print(t.decode(batch['input']['input_ids'][i]))
-            # print(t.decode(batch['target']['input_ids'][i]))
-            # print()
+            print(t.decode(batch['input']['input_ids'][i]))
+            print(t.decode(batch['target']['input_ids'][i]))
+            print()
             
-        # pdb.set_trace()
-            pass
+        pdb.set_trace()
     
     
