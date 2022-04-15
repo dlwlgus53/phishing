@@ -122,11 +122,12 @@ class Dataset(torch.utils.data.Dataset):
                         
                 # ###########changed part ###########################################
                 if self.data_type == 'train' and self.aux == 1:
-                    for key_idx, key in enumerate(ontology.QA['all-domain']): # TODO
-                        # domain = key.split("_")[0]
-                        # if self.zeroshot_domain and domain == self.zeroshot_domain: continue
-                        domain_name = " ".join(key.split("_"))
-                        q = "대화에 " +domain_name  + " " + ontology.QA["general-question"] +  "?" 
+                    for key_idx, key in enumerate(ontology.QA['all-domain']): 
+                        domain = key.split("-")[0]
+                        slot = key.split("-")[1]
+                        if self.domain != 'all' and domain != self.domain : continue
+                        
+                        q = "대화에 " + domain + " " +slot  + ontology.QA["general-question"] +  "?" 
                         c = dialogue_text
                         if key in turn['belief']: # 언급을 한 경우
                             a = '네'
@@ -142,16 +143,9 @@ class Dataset(torch.utils.data.Dataset):
                     
                 gold_belief_state[d_id][int(t_id)] = turn['belief']
                 gold_context[d_id][int(t_id)] = dialogue_text
-                
-                
                 dialogue_text += '[system] '
                 dialogue_text += turn['system']
-                
 
-
-        
-        # sort guaranteed to be stable : it is important because of question!   
-        # assert schema_sort == schema
         return turn_id, dial_id,  question, schema, answer, gold_belief_state, gold_context
 
     def __getitem__(self, index):
@@ -215,7 +209,7 @@ if __name__ == '__main__':
     parser.add_argument('--do_short' ,  type = int, default=0)
     parser.add_argument('--dst_student_rate' ,  type = float, default=0.0)
     parser.add_argument('--seed' ,  type = float, default=1)
-    parser.add_argument('--aux' ,  type = int, default=0)
+    parser.add_argument('--aux' ,  type = int, default=1)
     
     parser.add_argument('--max_length' ,  type = int, default=128)
     parser.add_argument('--domain', type=str, default = '대출')

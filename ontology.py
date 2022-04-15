@@ -1,5 +1,5 @@
 QA = {
-    "general-question": "대한 언급이 있습니까?",
+    "general-question": "의 언급이 있습니까?",
     "가족지인-관계": {
         "description": "가족지인 사칭 범죄자와의 관계는 무엇입니까?",
     },
