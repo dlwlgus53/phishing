@@ -4,7 +4,7 @@ import random
 from log_conf import init_logger
 
 def init_experiment(args):
-    init_logger(f'{args.save_prefix}{args.data_rate}.log')
+    init_logger(f'{args.save_prefix}{args.domain}.log')
     torch.manual_seed(args.seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False

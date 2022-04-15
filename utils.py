@@ -49,7 +49,7 @@ def evaluate_metrics(all_prediction, raw_file, detail_log):
             turn = dial[turn_idx]
             try:
                 belief_label = turn['belief']
-                belief_pred = all_prediction[key][turn_idx]
+                belief_pred = all_prediction[key][int(turn_idx)]
             except:
                 pdb.set_trace()
             
@@ -118,7 +118,7 @@ def compute_acc(gold, pred, slot_temp, domain, detail_log):
         if p not in gold and p.split(" : ")[0] not in miss_slot:
             wrong_pred += 1
             schema_acc[p.split(" : ")[0]] -=1
-            domain_acc[p.split("_")[0]] -=1
+            domain_acc[p.split("-")[0]] -=1
             if detail_log:
                 detail_wrong.append((ontology.QA['NOT_MENTIONED'],p))
             

@@ -42,6 +42,8 @@ parser.add_argument('-g', '--gpus', default=4, type=int,help='number of gpus per
 parser.add_argument('-nr', '--nr', default=0, type=int,help='ranking within the nodes')
 parser.add_argument('--aux' ,  type = int, default=1)
 parser.add_argument('--train_continue', type=int, default = 0)
+parser.add_argument('--domain', type=str, default = '대출')
+
 
 args = parser.parse_args()
 init.init_experiment(args)
@@ -122,8 +124,8 @@ def main_worker(gpu, args):
             min_loss = loss
             best_performance['min_loss'] = min_loss.item()
             if not args.debugging:
-                torch.save(optimizer.state_dict(), f"model/optimizer/woz{args.save_prefix}{args.data_rate}.pt")
-                torch.save(model.state_dict(), f"model/woz{args.save_prefix}{args.data_rate}.pt")
+                torch.save(optimizer.state_dict(), f"model/optimizer/woz{args.save_prefix}{args.domain}.pt")
+                torch.save(model.state_dict(), f"model/woz{args.save_prefix}{args.domain}.pt")
             logger.info("safely saved")
                 
     if gpu==0:            
@@ -165,10 +167,10 @@ def evaluate():
     schema_acc['loss'] = loss
     
     
-    utils.dict_to_csv(schema_acc, f'{args.save_prefix}{args.data_rate}.csv')
+    utils.dict_to_csv(schema_acc, f'{args.save_prefix}{args.domain}.csv')
     
     if args.detail_log:
-        utils.dict_to_json(detail_wrong, f'{args.save_prefix}{args.data_rate}.json')
+        utils.dict_to_json(detail_wrong, f'{args.save_prefix}{args.domain}.json')
     
     
     

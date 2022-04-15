@@ -21,6 +21,7 @@ class Dataset(torch.utils.data.Dataset):
         self.dst_student_rate = args.dst_student_rate
         self.max_length = args.max_length
         self.aux = args.aux
+        self.domain = args.domain
         
         
         self.belief_state= defaultdict(lambda : defaultdict(dict))# dial_id, # turn_id
@@ -53,6 +54,7 @@ class Dataset(torch.utils.data.Dataset):
         self.schema = schema
         self.gold_belief_state = gold_belief_state
         self.gold_context = gold_context
+        
         
             
             
@@ -92,16 +94,19 @@ class Dataset(torch.utils.data.Dataset):
         turn_id = []
         
         for d_id in dataset.keys():
-            if self.data_type == 'train' and d_id not in self.use_list: continue
             dialogue = dataset[d_id]
             dialogue_text = ""
             turn_ids = dialogue.keys()
             for t_id in turn_ids:
                 turn = dialogue[t_id]
+                turn_domain = turn['domain']
+                
+                if self.domain != 'all' and turn_domain != self.domain : break
                 dialogue_text += '[user] '
                 dialogue_text += str(turn['user'])
 
                 for key_idx, key in enumerate(ontology.QA['all-domain']): # TODO
+                    if self.domain != 'all' and turn_domain != self.domain : continue
                     q = ontology.QA[key]['description']
                     if key in turn['belief']: # 언급을 한 경우
                         a = turn['belief'][key]
@@ -207,17 +212,17 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--data_rate' ,  type = float, default=1.0)
-    parser.add_argument('--do_short' ,  type = int, default=1)
+    parser.add_argument('--do_short' ,  type = int, default=0)
     parser.add_argument('--dst_student_rate' ,  type = float, default=0.0)
     parser.add_argument('--seed' ,  type = float, default=1)
-    parser.add_argument('--aux' ,  type = int, default=1)
+    parser.add_argument('--aux' ,  type = int, default=0)
     
     parser.add_argument('--max_length' ,  type = int, default=128)
-    
+    parser.add_argument('--domain', type=str, default = '대출')
     
     args = parser.parse_args()
 
-    args.data_path = './data/0306data.json' 
+    args.data_path = '../phishing_origin_and_data_processing/data/0401dev_data.json'
     from transformers import T5Tokenizer
     args.tokenizer = T5Tokenizer.from_pretrained('google/mt5-small')
     
