@@ -107,7 +107,7 @@ def test(args, model, test_loader, test_dataset):
                 str(len(test_loader)),
                 ))
          
-        with open('logs/pred_belief.json', 'w') as fp:
+        with open(f'logs/{args.save_prefix}{args.domain}.json', 'w') as fp:
             json.dump(belief_state, fp, indent=4, ensure_ascii=False)
             
 

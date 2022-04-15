@@ -49,6 +49,7 @@ def evaluate_metrics(all_prediction, raw_file, detail_log):
             turn = dial[turn_idx]
             try:
                 belief_label = turn['belief']
+                assert int(turn_idx) in all_prediction[key].keys()
                 belief_pred = all_prediction[key][int(turn_idx)]
             except:
                 pdb.set_trace()
